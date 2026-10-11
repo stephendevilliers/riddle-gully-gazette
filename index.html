@@ -1,0 +1,1161 @@
+<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Riddle Gully Gazette</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Merriweather:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+</head><body>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --paper: #f5edd8;
+  --paper-dark: #e9dcc0;
+  --paper-aged: #c8b48a;
+  --ink: #1c1208;
+  --ink-mid: #4a3820;
+  --red: #b5271e;
+  --gold: #b8820f;
+  --green: #3a5a32;
+  --blue-ink: #1a3a5c;
+  --dark-bg: #1a1008;
+}
+
+body {
+  font-family: 'Merriweather', Georgia, serif;
+  background: var(--dark-bg);
+  min-height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── SCREEN SYSTEM ─────────────────────────── */
+.screen {
+  position: fixed;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.screen.active { display: flex; }
+.screen.visible { opacity: 1; }
+.screen::-webkit-scrollbar { width: 6px; }
+.screen::-webkit-scrollbar-track { background: var(--paper-dark); }
+.screen::-webkit-scrollbar-thumb { background: var(--paper-aged); border-radius: 3px; }
+
+/* ── PAPER TEXTURE ─────────────────────────── */
+.paper-bg {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse at 20% 40%, rgba(160,120,60,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 70%, rgba(100,80,40,0.05) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+/* ── MASTHEAD ──────────────────────────────── */
+.masthead {
+  width: 100%;
+  text-align: center;
+  border-bottom: 3px double var(--ink);
+  padding: 14px 20px 10px;
+  flex-shrink: 0;
+}
+.masthead-title {
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(1.6rem, 5vw, 2.8rem);
+  color: var(--ink);
+  letter-spacing: 0.1em;
+  line-height: 1;
+}
+.masthead-rule {
+  display: flex; align-items: center; gap: 8px;
+  margin: 5px 0 3px;
+  color: var(--ink-mid);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  font-family: 'Special Elite', monospace;
+  justify-content: center;
+}
+.masthead-rule span { flex: 1; height: 1px; background: var(--ink-mid); max-width: 60px; }
+.masthead-sub {
+  font-family: 'Caveat', cursive;
+  font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+  color: var(--ink-mid);
+  letter-spacing: 0.12em;
+}
+
+/* ── PROGRESS BAR ──────────────────────────── */
+.progress-track {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 16px;
+  gap: 0;
+  background: var(--paper-dark);
+  border-bottom: 1px solid var(--paper-aged);
+  flex-shrink: 0;
+  flex-wrap: nowrap;
+}
+.prog-step {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  min-width: 50px;
+}
+.prog-dot {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 2px solid var(--paper-aged);
+  background: var(--paper);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; color: var(--ink-mid);
+  font-family: 'Special Elite', monospace;
+  transition: all 0.4s;
+}
+.prog-dot.done { background: var(--green); border-color: var(--green); color: white; font-size: 0.8rem; }
+.prog-dot.active { background: var(--gold); border-color: var(--gold); color: white; box-shadow: 0 0 0 3px rgba(184,130,15,0.25); }
+.prog-label {
+  font-family: 'Caveat', cursive;
+  font-size: 0.6rem; color: var(--ink-mid);
+  text-align: center; line-height: 1.2;
+  white-space: nowrap;
+}
+.prog-connector { flex: 1; height: 2px; background: var(--paper-aged); max-width: 40px; margin-bottom: 18px; }
+
+/* ── STAMPS ────────────────────────────────── */
+.stamp {
+  display: inline-block;
+  border: 2.5px solid currentColor;
+  padding: 3px 9px;
+  font-family: 'Special Elite', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.stamp-red { color: var(--red); }
+.stamp-blue { color: var(--blue-ink); }
+.stamp-green { color: var(--green); }
+.rotate-neg { transform: rotate(-3deg); display: inline-block; }
+.rotate-pos { transform: rotate(2deg); display: inline-block; }
+
+/* ── BUTTONS ───────────────────────────────── */
+.btn {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  padding: 11px 26px;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.btn:hover:not(:disabled) { background: var(--green); border-color: var(--green); transform: translateY(-2px); box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+.btn:active:not(:disabled) { transform: translateY(0); }
+.btn:disabled { opacity: 0.38; cursor: not-allowed; }
+.btn-ghost { background: transparent; color: var(--ink); }
+.btn-ghost:hover:not(:disabled) { background: var(--ink); color: var(--paper); }
+
+/* ─────────────────────────────────────────────
+   SCREEN 0 — SPLASH
+   ───────────────────────────────────────────── */
+#screen-0 {
+  background: var(--dark-bg);
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.splash-paper {
+  background: var(--paper);
+  max-width: 660px; width: 100%;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.7), 0 2px 10px rgba(0,0,0,0.4);
+  overflow: hidden;
+  position: relative;
+}
+.splash-header {
+  background: var(--ink); color: var(--paper);
+  text-align: center; padding: 20px 20px 14px;
+}
+.splash-gazette-name {
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  letter-spacing: 0.14em; line-height: 1;
+}
+.splash-divider {
+  display: flex; align-items: center; gap: 10px;
+  padding: 4px 20px; color: var(--paper); opacity: 0.5;
+  font-family: 'Special Elite', monospace; font-size: 0.7rem; letter-spacing: 0.15em;
+}
+.splash-divider::before, .splash-divider::after { content: ''; flex: 1; height: 1px; background: currentColor; }
+.splash-gazette-sub {
+  font-family: 'Caveat', cursive;
+  font-size: 0.95rem; opacity: 0.65; margin-top: 2px; letter-spacing: 0.2em;
+}
+.splash-body-wrap {
+  padding: 22px 26px 20px;
+  position: relative;
+}
+.splash-stamp-row {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 14px;
+}
+.splash-headline {
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(1.3rem, 3.8vw, 1.9rem);
+  color: var(--ink); line-height: 1.2;
+  border-bottom: 2px solid var(--ink); padding-bottom: 8px;
+  margin-bottom: 6px;
+}
+.splash-sub {
+  font-family: 'Caveat', cursive; font-size: 1.05rem;
+  color: var(--ink-mid); margin-bottom: 14px; display: block;
+}
+.splash-text {
+  font-size: 0.87rem; line-height: 1.9; color: var(--ink); margin-bottom: 14px;
+}
+.splash-note {
+  background: var(--paper-dark);
+  border-left: 4px solid var(--gold);
+  padding: 11px 14px; margin: 14px 0;
+}
+.splash-note p {
+  font-family: 'Caveat', cursive; font-size: 1.1rem;
+  color: var(--ink); line-height: 1.6;
+}
+.splash-steps {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin: 16px 0;
+}
+.splash-step {
+  text-align: center; padding: 10px 6px;
+  border: 1px solid var(--paper-aged);
+  background: rgba(255,255,255,0.4);
+}
+.splash-step-icon { font-size: 1.5rem; display: block; margin-bottom: 4px; }
+.splash-step-label {
+  font-family: 'Caveat', cursive; font-size: 0.88rem;
+  color: var(--ink-mid); line-height: 1.3;
+}
+.splash-cta { text-align: center; margin-top: 18px; }
+.splash-footer {
+  background: var(--paper-dark); border-top: 1px solid var(--paper-aged);
+  padding: 8px 20px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.splash-footer span {
+  font-family: 'Special Elite', monospace;
+  font-size: 0.67rem; color: var(--ink-mid); letter-spacing: 0.08em;
+}
+
+/* ── Bats deco on splash ── */
+.bats-bg {
+  position: absolute; top: 0; right: 0; opacity: 0.06;
+  font-size: 1.4rem; letter-spacing: -4px; pointer-events: none;
+  line-height: 1.8; text-align: right; padding: 10px;
+}
+
+/* ─────────────────────────────────────────────
+   SCREEN 1 — EVIDENCE
+   ───────────────────────────────────────────── */
+#screen-1 { flex-direction: column; }
+#screen-1.paper-bg, #screen-2.paper-bg, #screen-3.paper-bg, #screen-4.paper-bg {
+  background-color: var(--paper);
+}
+.content-wrap {
+  width: 100%; max-width: 720px;
+  padding: 20px; flex: 1;
+}
+.section-title {
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  color: var(--ink); margin-bottom: 3px; line-height: 1.2;
+}
+.section-sub {
+  font-family: 'Caveat', cursive; font-size: 1.05rem;
+  color: var(--ink-mid); margin-bottom: 16px;
+}
+.case-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.case-brief {
+  border: 1px solid var(--paper-aged);
+  padding: 13px 15px; margin-bottom: 18px;
+  background: rgba(255,255,255,0.35);
+  position: relative;
+}
+.case-brief-label {
+  font-family: 'Special Elite', monospace; font-size: 0.68rem;
+  letter-spacing: 0.2em; color: var(--ink-mid); text-transform: uppercase;
+  margin-bottom: 6px; display: block;
+}
+.case-brief p { font-size: 0.86rem; line-height: 1.8; color: var(--ink); }
+
+.evidence-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 14px; margin-bottom: 20px;
+}
+.evidence-card {
+  background: var(--paper); border: 1px solid var(--paper-aged);
+  padding: 16px 14px; cursor: pointer; transition: all 0.22s;
+  box-shadow: 2px 2px 0 var(--paper-aged);
+  position: relative; text-align: center;
+}
+.evidence-card:hover { transform: translateY(-4px) rotate(0.5deg); box-shadow: 4px 6px 0 var(--paper-aged); }
+.evidence-card.revealed { border-color: var(--green); background: #f0f7ee; }
+.evidence-card.revealed .evidence-prompt { display: none; }
+.evidence-card.revealed .evidence-text { display: block; }
+.evidence-check {
+  position: absolute; top: 8px; right: 10px;
+  color: var(--green); font-size: 1rem; font-weight: bold;
+  display: none;
+}
+.evidence-card.revealed .evidence-check { display: block; }
+.evidence-icon { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+.evidence-label {
+  font-family: 'Special Elite', monospace; font-size: 0.78rem;
+  text-transform: uppercase; letter-spacing: 0.1em;
+  color: var(--ink-mid); margin-bottom: 7px;
+}
+.evidence-prompt {
+  font-family: 'Caveat', cursive; font-size: 1rem; color: var(--ink-mid);
+}
+.evidence-text {
+  font-family: 'Caveat', cursive; font-size: 1.02rem;
+  color: var(--ink); line-height: 1.5; display: none; text-align: left;
+}
+.evidence-counter {
+  font-family: 'Caveat', cursive; font-size: 1.05rem;
+  color: var(--ink-mid); margin-bottom: 10px; text-align: center;
+}
+.evidence-counter.done { color: var(--green); font-weight: 700; }
+
+/* ─────────────────────────────────────────────
+   SCREEN 2 — CIPHER
+   ───────────────────────────────────────────── */
+#screen-2 { flex-direction: column; }
+.cipher-note-wrap {
+  background: #fdf8e8; border: 1px solid #c9b96a;
+  padding: 20px; margin: 14px 0;
+  position: relative; transform: rotate(-0.5deg);
+  box-shadow: 2px 3px 10px rgba(0,0,0,0.13);
+}
+.cipher-tape {
+  position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+  width: 50px; height: 16px; background: rgba(210,190,100,0.45);
+}
+.cipher-meta {
+  font-family: 'Caveat', cursive; font-size: 0.88rem;
+  color: #999; text-align: center; margin-bottom: 10px;
+}
+.cipher-message {
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(1rem, 2.8vw, 1.35rem);
+  letter-spacing: 0.22em; line-height: 2.2;
+  color: var(--ink); text-align: center;
+}
+.cipher-rule {
+  background: var(--paper-dark); border: 1px dashed var(--paper-aged);
+  padding: 12px 15px; margin: 12px 0;
+  font-size: 0.84rem; color: var(--ink); line-height: 1.75;
+}
+.cipher-rule strong { font-family: 'Special Elite', monospace; color: var(--red); }
+
+.alpha-grid {
+  display: flex; flex-wrap: wrap; gap: 2px;
+  margin: 8px 0 16px;
+}
+.alpha-pair {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 20px; padding: 2px 1px;
+  font-family: 'Special Elite', monospace; font-size: 0.62rem;
+}
+.alpha-encoded { color: var(--red); font-weight: bold; }
+.alpha-decoded { color: var(--green); }
+.alpha-arrow { color: var(--paper-aged); font-size: 0.5rem; line-height: 1; }
+
+.cipher-input-row { display: flex; gap: 10px; margin-top: 14px; }
+.cipher-input {
+  flex: 1; padding: 11px 13px;
+  font-family: 'Special Elite', monospace; font-size: 0.88rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border: 2px solid var(--paper-aged); background: var(--paper); color: var(--ink);
+}
+.cipher-input:focus { outline: none; border-color: var(--gold); }
+.cipher-feedback {
+  margin-top: 10px; padding: 10px 14px;
+  font-family: 'Caveat', cursive; font-size: 1.1rem;
+  display: none; border-radius: 1px;
+}
+.cipher-feedback.correct { background: #d4edda; color: #155724; border: 1px solid #b1dfbb; display: block; }
+.cipher-feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f1b0b7; display: block; }
+.hint-link {
+  font-family: 'Caveat', cursive; font-size: 0.98rem;
+  color: var(--blue-ink); cursor: pointer; text-decoration: underline;
+  text-align: right; margin-top: 6px; display: none;
+}
+
+/* ─────────────────────────────────────────────
+   SCREEN 3 — INTERVIEW
+   ───────────────────────────────────────────── */
+#screen-3 { flex-direction: column; }
+.witness-card {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--paper); border: 1px solid var(--paper-aged);
+  padding: 14px; margin-bottom: 14px;
+  box-shadow: 2px 2px 0 var(--paper-aged);
+}
+.witness-avatar {
+  width: 64px; height: 64px; border-radius: 2px;
+  background: var(--paper-dark); border: 2px solid var(--paper-aged);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; flex-shrink: 0;
+}
+.witness-inner { flex: 1; }
+.witness-name {
+  font-family: 'Special Elite', monospace; font-size: 0.98rem;
+  color: var(--ink); margin-bottom: 1px;
+}
+.witness-role {
+  font-family: 'Caveat', cursive; font-size: 0.9rem;
+  color: var(--ink-mid); margin-bottom: 10px;
+}
+.witness-response {
+  font-size: 0.84rem; font-style: italic; line-height: 1.75;
+  color: var(--ink); border-left: 3px solid var(--gold);
+  padding-left: 10px; margin-bottom: 12px; display: none;
+}
+.witness-response.visible { display: block; }
+.q-options { display: flex; flex-direction: column; gap: 7px; }
+.q-btn {
+  text-align: left; background: var(--paper-dark);
+  border: 1px solid var(--paper-aged);
+  padding: 9px 13px; cursor: pointer;
+  font-family: 'Caveat', cursive; font-size: 1.06rem;
+  color: var(--ink); transition: all 0.18s; position: relative;
+}
+.q-btn:hover:not(.asked) { background: var(--paper-aged); }
+.q-btn.asked { opacity: 0.45; cursor: default; }
+.q-btn.asked::after {
+  content: '✓ Asked'; position: absolute; right: 10px;
+  top: 50%; transform: translateY(-50%);
+  font-size: 0.78rem; color: var(--green);
+}
+
+.reporter-notebook {
+  background: #fefae8; border: 1px solid #c9b96a;
+  padding: 14px; margin-top: 4px;
+  font-family: 'Caveat', cursive;
+  min-height: 90px;
+}
+.notebook-label {
+  font-family: 'Special Elite', monospace; font-size: 0.68rem;
+  letter-spacing: 0.18em; color: var(--gold); margin-bottom: 8px; display: block;
+}
+.notebook-entry {
+  font-size: 1.05rem; color: var(--ink); line-height: 2;
+  padding-left: 10px; border-left: 2px solid var(--gold);
+  margin-bottom: 6px;
+}
+
+/* ─────────────────────────────────────────────
+   SCREEN 4 — ARTICLE EDITOR
+   ───────────────────────────────────────────── */
+#screen-4 { flex-direction: column; }
+.article-paper {
+  background: white; border: 1px solid #d0d0d0;
+  padding: 26px 28px;
+  box-shadow: 2px 3px 14px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+.gazette-mini {
+  text-align: center; border-bottom: 2px solid var(--ink);
+  padding-bottom: 10px; margin-bottom: 16px;
+}
+.gazette-mini h2 {
+  font-family: 'Special Elite', monospace; font-size: 1.2rem;
+  letter-spacing: 0.2em; color: var(--ink);
+}
+.gazette-mini p {
+  font-family: 'Caveat', cursive; font-size: 0.8rem;
+  color: var(--ink-mid); letter-spacing: 0.1em;
+}
+.art-field { margin-bottom: 15px; }
+.art-field label {
+  display: block;
+  font-family: 'Special Elite', monospace; font-size: 0.68rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-mid); margin-bottom: 4px;
+}
+.art-field input, .art-field textarea, .art-field select {
+  width: 100%; padding: 7px 2px;
+  border: none; border-bottom: 2px solid #e0d8c8;
+  font-family: 'Merriweather', serif; font-size: 0.88rem;
+  color: var(--ink); background: transparent; transition: border-color 0.2s;
+}
+.art-field input:focus, .art-field textarea:focus, .art-field select:focus {
+  outline: none; border-bottom-color: var(--gold);
+}
+.art-field input.headline-input {
+  font-family: 'Special Elite', monospace;
+  font-size: 1.15rem; letter-spacing: 0.03em;
+}
+.art-field textarea { resize: vertical; min-height: 72px; line-height: 1.8; }
+.art-row { display: flex; gap: 16px; }
+.art-row .art-field { flex: 1; }
+
+/* ─────────────────────────────────────────────
+   SCREEN 5 — PUBLISHED
+   ───────────────────────────────────────────── */
+#screen-5 {
+  background: var(--dark-bg);
+  justify-content: center; align-items: center;
+}
+.published-wrap {
+  width: 100%; max-width: 680px;
+  padding: 20px;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+.published-gazette {
+  background: var(--paper); width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+  overflow: hidden;
+}
+.pub-header {
+  background: var(--ink); color: var(--paper);
+  text-align: center; padding: 14px;
+}
+.pub-header h1 { font-family: 'Special Elite', monospace; font-size: 1.6rem; letter-spacing: 0.18em; }
+.pub-header p { font-family: 'Caveat', cursive; font-size: 0.9rem; opacity: 0.65; margin-top: 2px; }
+.pub-body { padding: 18px 24px; }
+.pub-headline {
+  font-family: 'Special Elite', monospace;
+  font-size: clamp(1.2rem, 3vw, 1.65rem);
+  color: var(--ink); line-height: 1.2;
+  border-bottom: 2px solid var(--ink); padding-bottom: 7px; margin-bottom: 6px;
+}
+.pub-byline {
+  font-family: 'Caveat', cursive; font-size: 0.88rem;
+  color: var(--ink-mid); margin-bottom: 13px;
+}
+.pub-text { font-size: 0.83rem; line-height: 1.85; color: var(--ink); }
+.pub-quote {
+  border-left: 3px solid var(--gold); padding-left: 10px;
+  margin: 12px 0; font-style: italic;
+  font-size: 0.9rem; color: var(--ink-mid);
+}
+.badge-panel {
+  background: var(--paper); width: 100%;
+  padding: 26px 20px; text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+}
+.badge-circle {
+  width: 110px; height: 110px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), #e0a020);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 4px 20px rgba(180,130,15,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  animation: badgePop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both 0.2s;
+}
+@keyframes badgePop {
+  from { transform: scale(0) rotate(-20deg); opacity: 0; }
+  to { transform: scale(1) rotate(0); opacity: 1; }
+}
+.badge-emoji { font-size: 2.6rem; line-height: 1; }
+.badge-label { font-family: 'Special Elite', monospace; font-size: 0.52rem; letter-spacing: 0.12em; color: var(--ink); margin-top: 3px; text-align: center; }
+.badge-title { font-family: 'Special Elite', monospace; font-size: 1.15rem; color: var(--ink); margin-bottom: 4px; }
+.badge-sub { font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--ink-mid); margin-bottom: 18px; line-height: 1.5; }
+.btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ─────────────────────────────────────────────
+   MISC / UTILITY
+   ───────────────────────────────────────────── */
+.text-center { text-align: center; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.pb-20 { padding-bottom: 20px; }
+
+/* Decorative bat string for splash */
+@keyframes batWave {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(0.95); }
+}
+.bat-float { display: inline-block; animation: batWave 3s ease-in-out infinite; }
+.bat-float:nth-child(2) { animation-delay: 0.5s; }
+.bat-float:nth-child(3) { animation-delay: 1s; }
+.bat-float:nth-child(4) { animation-delay: 1.5s; }
+.bat-float:nth-child(5) { animation-delay: 0.8s; }
+
+</style>
+
+<!-- ══════════════════════════════════════════
+     SCREEN 0 — SPLASH
+     ══════════════════════════════════════════ -->
+<div id="screen-0" class="screen active">
+  <div class="splash-paper">
+
+    <div class="splash-header">
+      <div class="splash-gazette-name">Riddle Gully Gazette</div>
+      <div class="splash-divider">★&nbsp;&nbsp;est. riddle gully&nbsp;&nbsp;★</div>
+      <div class="splash-gazette-sub">Australia's Most Intrepid Small-Town Paper</div>
+    </div>
+
+    <div class="splash-body-wrap paper-bg">
+      <div class="bats-bg">
+        <span class="bat-float">🦇</span>
+        <span class="bat-float">🦇</span>
+        <span class="bat-float">🦇</span>
+        <span class="bat-float">🦇</span>
+        <span class="bat-float">🦇</span>
+      </div>
+
+      <div class="splash-stamp-row">
+        <div class="stamp stamp-red rotate-neg">Urgent</div>
+        <div class="stamp stamp-blue rotate-pos">Confidential</div>
+      </div>
+
+      <h1 class="splash-headline">Calling All<br>Junior Correspondents!</h1>
+      <span class="splash-sub">— A message from Editor-in-Chief, Pollo Di Nozi —</span>
+
+      <p class="splash-text">
+        Something very strange is happening in Riddle Gully.<br><br>
+        The Ghost Bats that have roosted in our old cemetery trees for <em>one hundred years</em> have suddenly vanished. A coded note was shoved under our door at midnight. And Mayor Blunt is being <em>suspiciously</em> cheerful.<br><br>
+        I can't crack this story alone. I need <strong>brave, sharp, curious reporters</strong> who aren't afraid to ask hard questions, dig for the truth, and write a story the whole town needs to read.
+      </p>
+
+      <div class="splash-note">
+        <p>🐑 P.S. Berry the sheep says hi. She sniffed something suspicious near the old gum tree but she won't tell me what. Typical.</p>
+      </div>
+
+      <div class="splash-steps">
+        <div class="splash-step">
+          <span class="splash-step-icon">🔍</span>
+          <div class="splash-step-label">Gather Evidence</div>
+        </div>
+        <div class="splash-step">
+          <span class="splash-step-icon">🔐</span>
+          <div class="splash-step-label">Crack the Code</div>
+        </div>
+        <div class="splash-step">
+          <span class="splash-step-icon">🎙️</span>
+          <div class="splash-step-label">Interview Witnesses</div>
+        </div>
+        <div class="splash-step">
+          <span class="splash-step-icon">✏️</span>
+          <div class="splash-step-label">Write the Story</div>
+        </div>
+      </div>
+
+      <div class="splash-cta">
+        <button class="btn" onclick="goTo(1)">Accept the Assignment →</button>
+      </div>
+    </div>
+
+    <div class="splash-footer">
+      <span>Vol. XII · Issue 3</span>
+      <span>Riddle Gully, South Australia</span>
+      <span>Free · For Curious Minds</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SCREEN 1 — GATHER EVIDENCE
+     ══════════════════════════════════════════ -->
+<div id="screen-1" class="screen paper-bg">
+  <div class="masthead paper-bg">
+    <div class="masthead-title">Riddle Gully Gazette</div>
+    <div class="masthead-rule"><span></span>Junior Correspondent Program<span></span></div>
+    <div class="masthead-sub">Your Investigation Begins Here</div>
+  </div>
+  <div class="progress-track" id="prog-1"></div>
+
+  <div class="content-wrap">
+    <div class="case-header">
+      <div>
+        <h2 class="section-title">Case File #001<br>The Vanishing Bats</h2>
+        <p class="section-sub">Tap each clue to examine the evidence</p>
+      </div>
+      <div class="stamp stamp-red rotate-pos" style="margin-top:4px;">Open</div>
+    </div>
+
+    <div class="case-brief">
+      <span class="case-brief-label">Mission Briefing — From Pollo Di Nozi, Editor</span>
+      <p>For 100 years, a colony of endangered Ghost Bats has roosted in the old cemetery trees at dusk. Last Tuesday, they vanished without a trace. An anonymous tip arrived at the Gazette — in code. Three witnesses have agreed to speak with you. Gather the evidence, crack the code, conduct your interview, and write the story Riddle Gully needs to hear.</p>
+    </div>
+
+    <div class="evidence-grid">
+
+      <div class="evidence-card" onclick="revealClue(this, 0)">
+        <div class="evidence-check">✓</div>
+        <span class="evidence-icon">📋</span>
+        <div class="evidence-label">Council Notice</div>
+        <div class="evidence-prompt">Tap to examine →</div>
+        <div class="evidence-text">A planning notice — signed by Mayor Blunt — approves demolition of the cemetery's gum trees to build a car park. Date: last month. Was this ever made public?</div>
+      </div>
+
+      <div class="evidence-card" onclick="revealClue(this, 1)">
+        <div class="evidence-check">✓</div>
+        <span class="evidence-icon">🦇</span>
+        <div class="evidence-label">Wildlife Survey</div>
+        <div class="evidence-prompt">Tap to examine →</div>
+        <div class="evidence-text">A 2019 wildlife survey classifies the Ghost Bat colony as "critically significant." Removing the trees would be illegal under State law... unless someone obtained a secret exemption.</div>
+      </div>
+
+      <div class="evidence-card" onclick="revealClue(this, 2)">
+        <div class="evidence-check">✓</div>
+        <span class="evidence-icon">✉️</span>
+        <div class="evidence-label">Coded Note</div>
+        <div class="evidence-prompt">Tap to examine →</div>
+        <div class="evidence-text">A crumpled note found under the Gazette's door at midnight. The message is in code — someone wanted to talk but was too scared to sign their name. Can you decode it?</div>
+      </div>
+
+    </div>
+
+    <div id="evidence-counter" class="evidence-counter">0 of 3 clues examined</div>
+    <div class="text-center">
+      <button id="btn-to-cipher" class="btn" onclick="goTo(2)" disabled>Decode the Secret Message →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SCREEN 2 — CIPHER PUZZLE
+     ══════════════════════════════════════════ -->
+<div id="screen-2" class="screen paper-bg">
+  <div class="masthead paper-bg">
+    <div class="masthead-title">Riddle Gully Gazette</div>
+    <div class="masthead-rule"><span></span>Junior Correspondent Program<span></span></div>
+    <div class="masthead-sub">Crack the Code</div>
+  </div>
+  <div class="progress-track" id="prog-2"></div>
+
+  <div class="content-wrap">
+    <h2 class="section-title">The Anonymous Tip</h2>
+    <p class="section-sub">Somebody slipped this coded note under our door. Can you decode it?</p>
+
+    <div class="cipher-note-wrap">
+      <div class="cipher-tape"></div>
+      <div class="cipher-meta">— crumpled note, found Tuesday night —</div>
+      <div class="cipher-message">PHHW PH DW WKH<br>ROG EDW EDUQ<br>DW PLGQLJKW</div>
+    </div>
+
+    <div class="cipher-rule">
+      <strong>How to decode it — Caesar Cipher, Shift 3</strong><br>
+      Each letter has been shifted <strong>forward</strong> by 3 in the alphabet.<br>
+      To read the real message, shift each letter <strong>back</strong> by 3.<br>
+      Example: &nbsp;<strong style="color:var(--red);">D</strong> → <strong style="color:var(--green);">A</strong> &nbsp;|&nbsp; <strong style="color:var(--red);">H</strong> → <strong style="color:var(--green);">E</strong> &nbsp;|&nbsp; <strong style="color:var(--red);">P</strong> → <strong style="color:var(--green);">M</strong>
+    </div>
+
+    <div style="font-family:'Special Elite',monospace;font-size:0.68rem;letter-spacing:0.18em;color:var(--ink-mid);text-transform:uppercase;margin-bottom:5px;">Alphabet Helper &nbsp;·&nbsp; <span style="color:var(--red);">Coded</span> → <span style="color:var(--green);">Decoded</span></div>
+    <div class="alpha-grid" id="alpha-grid"></div>
+
+    <div class="cipher-input-row">
+      <input class="cipher-input" id="cipher-input" type="text" placeholder="Type the decoded message here..." oninput="checkCipher()" autocomplete="off">
+      <button class="btn" onclick="checkCipher()">Check</button>
+    </div>
+    <div class="cipher-feedback" id="cipher-feedback"></div>
+    <div class="hint-link" id="hint-link" onclick="showHint()">💡 Need a hint?</div>
+
+    <div class="text-center mt-20 pb-20">
+      <button id="btn-to-interview" class="btn" onclick="goTo(3)" disabled>Conduct Your Interview →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SCREEN 3 — WITNESS INTERVIEW
+     ══════════════════════════════════════════ -->
+<div id="screen-3" class="screen paper-bg">
+  <div class="masthead paper-bg">
+    <div class="masthead-title">Riddle Gully Gazette</div>
+    <div class="masthead-rule"><span></span>Junior Correspondent Program<span></span></div>
+    <div class="masthead-sub">Conduct Your Interview</div>
+  </div>
+  <div class="progress-track" id="prog-3"></div>
+
+  <div class="content-wrap">
+    <h2 class="section-title">Talk to the Witnesses</h2>
+    <p class="section-sub">Ask questions carefully — their answers will shape your article. Ask as many as you like!</p>
+
+    <!-- Witness: Old Tom -->
+    <div class="witness-card">
+      <div class="witness-avatar">👴</div>
+      <div class="witness-inner">
+        <div class="witness-name">Old Tom Hennessey</div>
+        <div class="witness-role">Cemetery Groundskeeper · 40 years on the job</div>
+        <div class="witness-response" id="resp-tom"><em style="color:var(--ink-mid);">Click a question below to begin.</em></div>
+        <div class="q-options">
+          <button class="q-btn" onclick="ask('tom',0,this)">When did you first notice the bats were gone?</button>
+          <button class="q-btn" onclick="ask('tom',1,this)">Did you see anyone suspicious near the cemetery?</button>
+          <button class="q-btn" onclick="ask('tom',2,this)">What do you think is really going on here?</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Witness: Mrs Patel -->
+    <div class="witness-card">
+      <div class="witness-avatar">👩</div>
+      <div class="witness-inner">
+        <div class="witness-name">Mrs Sunita Patel</div>
+        <div class="witness-role">Owner, Patel's General Store · Community Treasurer</div>
+        <div class="witness-response" id="resp-patel"><em style="color:var(--ink-mid);">Click a question below to begin.</em></div>
+        <div class="q-options">
+          <button class="q-btn" onclick="ask('patel',0,this)">Have you heard about the Mayor's development plans?</button>
+          <button class="q-btn" onclick="ask('patel',1,this)">Does the community know what's happening?</button>
+          <button class="q-btn" onclick="ask('patel',2,this)">What would losing the bats mean for Riddle Gully?</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="reporter-notebook">
+      <span class="notebook-label">📓 Your Reporter's Notebook</span>
+      <div id="notebook-entries"><span style="color:var(--ink-mid);font-size:0.95rem;">Your notes will appear here as you ask questions...</span></div>
+    </div>
+
+    <div id="interview-counter" class="evidence-counter mt-16">Ask at least 3 questions to unlock the article editor</div>
+    <div class="text-center mt-16 pb-20">
+      <button id="btn-to-article" class="btn" onclick="goTo(4)" disabled>Write Your Article →</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SCREEN 4 — ARTICLE EDITOR
+     ══════════════════════════════════════════ -->
+<div id="screen-4" class="screen paper-bg">
+  <div class="masthead paper-bg">
+    <div class="masthead-title">Riddle Gully Gazette</div>
+    <div class="masthead-rule"><span></span>Junior Correspondent Program<span></span></div>
+    <div class="masthead-sub">Write Your Exposé</div>
+  </div>
+  <div class="progress-track" id="prog-4"></div>
+
+  <div class="content-wrap">
+    <h2 class="section-title">It's Time to Write the Story</h2>
+    <p class="section-sub">Every great journalist puts the truth on paper. Fill in your article below.</p>
+
+    <div class="article-paper">
+      <div class="gazette-mini">
+        <h2>The Riddle Gully Gazette</h2>
+        <p>Breaking News · Junior Correspondent Edition</p>
+      </div>
+
+      <div class="art-field">
+        <label>Your Headline — make it bold, make it count!</label>
+        <input type="text" class="headline-input" id="art-headline" placeholder="e.g. Mayor's Secret Plan Threatens Riddle Gully's Bats!" maxlength="90">
+      </div>
+
+      <div class="art-row">
+        <div class="art-field">
+          <label>Your Name (Byline)</label>
+          <input type="text" id="art-byline" placeholder="Your name">
+        </div>
+        <div class="art-field">
+          <label>Date</label>
+          <input type="text" id="art-date" placeholder="e.g. 6 August">
+        </div>
+      </div>
+
+      <div class="art-field">
+        <label>Lead Paragraph — Who? What? Where? When? Why? Lead with your biggest finding.</label>
+        <textarea id="art-lead" rows="4" placeholder="e.g. Riddle Gully's famous Ghost Bat colony has disappeared — and a secret council plan may be to blame..."></textarea>
+      </div>
+
+      <div class="art-field">
+        <label>Best Quote from Your Interviews — choose the one that tells the story</label>
+        <select id="art-quote">
+          <option value="">— Select a quote —</option>
+          <option value='"Those bats have been here since before I was born. Something scared them off. Something big." — Old Tom Hennessey'>"Those bats have been here since before I was born. Something big scared them off." — Old Tom</option>
+          <option value='"I saw a man in a dark jacket measuring the cemetery trees at night. Had an official clipboard." — Old Tom Hennessey'>"I saw a man measuring the cemetery trees at night. Official clipboard." — Old Tom</option>
+          <option value='"The Mayor held the planning meeting at 7am on a Sunday. Nobody came. I think that was rather the point." — Mrs Sunita Patel'>"The planning meeting was at 7am on a Sunday. Nobody came. I think that was rather the point." — Mrs Patel</option>
+          <option value='"Those bats bring $40,000 a year to this town through tourism. Lose the bats, lose the income — and part of who we are." — Mrs Sunita Patel'>"Those bats bring $40,000 a year to this town. Lose the bats, lose the income." — Mrs Patel</option>
+        </select>
+      </div>
+
+      <div class="art-field">
+        <label>Your Conclusion — what should happen? What are you calling for?</label>
+        <textarea id="art-conclusion" rows="3" placeholder="e.g. The residents of Riddle Gully deserve answers, and the Gazette will keep asking until we get them."></textarea>
+      </div>
+    </div>
+
+    <div class="text-center pb-20">
+      <button class="btn" onclick="publish()">Publish Your Story! 🗞️</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     SCREEN 5 — PUBLISHED!
+     ══════════════════════════════════════════ -->
+<div id="screen-5" class="screen">
+  <div class="published-wrap">
+
+    <div class="published-gazette">
+      <div class="pub-header">
+        <h1>Riddle Gully Gazette</h1>
+        <p>Junior Correspondent · Breaking News Edition</p>
+      </div>
+      <div class="pub-body">
+        <div class="pub-headline" id="pub-headline">Your headline will appear here</div>
+        <div class="pub-byline" id="pub-byline">By — · Riddle Gully</div>
+        <div class="pub-text">
+          <p id="pub-lead"></p>
+          <div class="pub-quote" id="pub-quote"></div>
+          <p id="pub-conclusion"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="badge-panel">
+      <div class="badge-circle">
+        <div class="badge-emoji">🗞️</div>
+        <div class="badge-label">RIDDLE GULLY<br>GAZETTE</div>
+      </div>
+      <div class="badge-title">Junior Correspondent — Earned!</div>
+      <div class="badge-sub">You gathered the evidence, decoded the tip,<br>interviewed the witnesses, and wrote the truth.<br>Pollo would be very proud. 🐑</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="goTo(0)">← Start a New Case</button>
+        <button class="btn" style="background:var(--green);border-color:var(--green);" onclick="window.print()">Print My Article 🖨️</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<script>
+// ═══════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════
+const G = {
+  screen: 0,
+  clues: 0,
+  cipherDone: false,
+  questions: 0,
+  attempts: 0,
+  notes: []
+};
+
+const ANSWER = "MEET ME AT THE OLD BAT BARN AT MIDNIGHT";
+
+const WITNESSES = {
+  tom: [
+    {
+      q: "When did you first notice the bats were gone?",
+      a: "Last Tuesday, dusk. I've watched that colony fly out every single evening for forty years. Then — nothing. Silent as a grave. Which, well, is fitting I suppose, but still.",
+      note: "Tom: bats vanished Tuesday at dusk. 40 years — never missed a night before."
+    },
+    {
+      q: "Did you see anyone suspicious near the cemetery?",
+      a: "Aye. Man in a dark jacket. Measuring the gum trees at night, he was — with one of those official-looking clipboards. Didn't think much of it then. I do now.",
+      note: "Mystery man: dark jacket, measuring trees at night, official clipboard."
+    },
+    {
+      q: "What do you think is really going on here?",
+      a: "Those bats have been here since before I was born. Something scared 'em off. Something big. When men start measuring trees in the dark, it's usually because something's about to get cut down.",
+      note: "Tom's theory: deliberate disturbance. 'When men measure trees in the dark, they get cut down.'"
+    }
+  ],
+  patel: [
+    {
+      q: "Have you heard about the Mayor's development plans?",
+      a: "The Mayor held the planning meeting at 7am on a Sunday. Nobody came. I think that was rather the point. I only found out because my cousin works at the council.",
+      note: "Planning meeting: 7am Sunday — deliberately hidden. Source: council insider."
+    },
+    {
+      q: "Does the community know what's happening?",
+      a: "Absolutely not. The Gazette is the only way anyone finds out anything in this town. That's precisely why what you're doing matters. The truth needs to be told!",
+      note: "Community unaware. Mrs Patel: 'The truth needs to be told!'"
+    },
+    {
+      q: "What would losing the bats mean for Riddle Gully?",
+      a: "Those bats bring tourists. Bat-watching season alone is worth $40,000 to this town each year. Lose the bats, lose the income. But more than money — they're part of who we are.",
+      note: "Economic: $40,000/year bat tourism. Also cultural significance — 'part of who we are.'"
+    }
+  ]
+};
+
+const STEPS = [
+  { icon: '🔍', label: 'Gather Evidence' },
+  { icon: '🔐', label: 'Decode Message' },
+  { icon: '🎙️', label: 'Interview' },
+  { icon: '✏️', label: 'Write Story' },
+  { icon: '🗞️', label: 'Published!' }
+];
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function goTo(n) {
+  const screens = document.querySelectorAll('.screen');
+  screens.forEach(s => { s.classList.remove('active', 'visible'); });
+  const t = document.getElementById('screen-' + n);
+  t.classList.add('active');
+  t.scrollTop = 0;
+  G.screen = n;
+  setTimeout(() => { t.classList.add('visible'); renderProgress(); }, 20);
+}
+
+// ═══════════════════════════════════════════
+// PROGRESS TRACKER
+// ═══════════════════════════════════════════
+function renderProgress() {
+  ['prog-1','prog-2','prog-3','prog-4'].forEach((id, si) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const currentStep = G.screen - 1;
+    let html = '';
+    STEPS.forEach((s, i) => {
+      const done = i < currentStep;
+      const active = i === currentStep;
+      const cls = done ? 'done' : active ? 'active' : '';
+      html += `<div class="prog-step">
+        <div class="prog-dot ${cls}">${done ? '✓' : s.icon}</div>
+        <div class="prog-label">${s.label}</div>
+      </div>`;
+      if (i < STEPS.length - 1) html += '<div class="prog-connector"></div>';
+    });
+    el.innerHTML = html;
+  });
+}
+
+// ═══════════════════════════════════════════
+// EVIDENCE
+// ═══════════════════════════════════════════
+function revealClue(card, i) {
+  if (card.classList.contains('revealed')) return;
+  card.classList.add('revealed');
+  G.clues++;
+  const counter = document.getElementById('evidence-counter');
+  if (G.clues === 3) {
+    counter.textContent = '✓ All 3 clues collected — ready to continue!';
+    counter.classList.add('done');
+    document.getElementById('btn-to-cipher').disabled = false;
+  } else {
+    counter.textContent = `${G.clues} of 3 clues examined`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// CIPHER
+// ═══════════════════════════════════════════
+function buildAlpha() {
+  const el = document.getElementById('alpha-grid');
+  if (!el) return;
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let html = '';
+  for (let i = 0; i < 26; i++) {
+    const dec = A[i];
+    const enc = A[(i + 3) % 26];
+    html += `<div class="alpha-pair">
+      <span class="alpha-encoded">${enc}</span>
+      <span class="alpha-arrow">↓</span>
+      <span class="alpha-decoded">${dec}</span>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function norm(s) {
+  return s.toUpperCase().replace(/[^A-Z\s]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function checkCipher() {
+  const val = document.getElementById('cipher-input').value;
+  const fb = document.getElementById('cipher-feedback');
+  const n = norm(val);
+  if (n === ANSWER) {
+    fb.className = 'cipher-feedback correct';
+    fb.innerHTML = '✓ Brilliant work! The message reads: <strong>"' + ANSWER + '"</strong> — someone wants to meet at the old bat barn at midnight. This is a huge lead!';
+    document.getElementById('btn-to-interview').disabled = false;
+    G.cipherDone = true;
+    document.getElementById('hint-link').style.display = 'none';
+  } else if (n.length > 4) {
+    G.attempts++;
+    fb.className = 'cipher-feedback wrong';
+    fb.textContent = 'Not quite — remember to shift each letter back by 3. P→M, H→E, W→T...';
+    if (G.attempts >= 2) document.getElementById('hint-link').style.display = 'block';
+  }
+}
+
+function showHint() {
+  const fb = document.getElementById('cipher-feedback');
+  fb.className = 'cipher-feedback correct';
+  fb.innerHTML = '💡 Hint: The first word is <strong>MEET</strong>. Use the alphabet helper above and decode it one letter at a time!';
+}
+
+// ═══════════════════════════════════════════
+// INTERVIEW
+// ═══════════════════════════════════════════
+function ask(witness, qi, btn) {
+  if (btn.classList.contains('asked')) return;
+  btn.classList.add('asked');
+
+  const data = WITNESSES[witness][qi];
+  const resp = document.getElementById('resp-' + witness);
+  resp.classList.add('visible');
+
+  // Clear placeholder on first answer
+  if (resp.querySelector('em')) resp.innerHTML = '';
+  resp.innerHTML += `<p style="margin-bottom:8px;">"${data.a}"</p>`;
+
+  // Add to notebook
+  G.notes.push(data.note);
+  G.questions++;
+
+  const nb = document.getElementById('notebook-entries');
+  nb.innerHTML = G.notes.map(n =>
+    `<div class="notebook-entry">• ${n}</div>`
+  ).join('');
+
+  const counter = document.getElementById('interview-counter');
+  if (G.questions >= 3) {
+    document.getElementById('btn-to-article').disabled = false;
+    counter.textContent = `✓ ${G.questions} questions asked — ready to write!`;
+    counter.classList.add('done');
+  } else {
+    counter.textContent = `${G.questions} of 3 questions asked`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// PUBLISH
+// ═══════════════════════════════════════════
+function publish() {
+  const headline = document.getElementById('art-headline').value.trim()
+    || "Riddle Gully's Bats: The Story the Mayor Didn't Want You to Read";
+  const byline = document.getElementById('art-byline').value.trim() || 'A Junior Correspondent';
+  const date = document.getElementById('art-date').value.trim() || 'Today';
+  const lead = document.getElementById('art-lead').value.trim()
+    || 'Something strange is happening in Riddle Gully, and somebody very important doesn\'t want you to know about it.';
+  const quote = document.getElementById('art-quote').value
+    || '"The truth needs to be told!" — Mrs Sunita Patel';
+  const conclusion = document.getElementById('art-conclusion').value.trim()
+    || 'The Riddle Gully Gazette will continue to ask questions until the whole truth is known.';
+
+  document.getElementById('pub-headline').textContent = headline;
+  document.getElementById('pub-byline').textContent = `By ${byline} · Riddle Gully, ${date}`;
+  document.getElementById('pub-lead').textContent = lead;
+  document.getElementById('pub-quote').textContent = quote;
+  document.getElementById('pub-conclusion').textContent = conclusion;
+
+  goTo(5);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+(function init(){ if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);return;}
+  buildAlpha();
+  // Fade in splash
+  setTimeout(() => document.getElementById('screen-0').classList.add('visible'), 50);
+})();
+</script>
+
+
+</body></html>
