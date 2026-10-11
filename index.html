@@ -585,6 +585,48 @@ body {
 .bat-float:nth-child(4) { animation-delay: 1.5s; }
 .bat-float:nth-child(5) { animation-delay: 0.8s; }
 
+/* ─────────────────────────────────────────────
+   MOBILE FIXES
+   ───────────────────────────────────────────── */
+/* Stop content shrinking to fit the screen (which clipped it) and let every screen scroll */
+.screen { -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.screen > * { flex-shrink: 0; }
+/* Centre short content, but start at the top when it's taller than the screen */
+#screen-0, #screen-5 { justify-content: flex-start; }
+#screen-0 > .splash-paper, #screen-5 > .published-wrap { margin: auto 0; }
+body { min-height: 100dvh; }
+
+@media (max-width: 600px) {
+  #screen-0 { padding: 12px; }
+  .splash-body-wrap { padding: 18px 16px 16px; }
+  .splash-steps { grid-template-columns: repeat(2, 1fr); }
+  .splash-footer { flex-wrap: wrap; justify-content: center; gap: 2px 12px; text-align: center; }
+  .content-wrap { padding: 16px; }
+  .progress-track { padding: 8px 6px; }
+  .prog-step { min-width: 0; flex: 0 0 auto; }
+  .prog-label { font-size: 0.55rem; }
+  .prog-connector { min-width: 6px; }
+  .case-header { gap: 10px; }
+  .evidence-grid { grid-template-columns: 1fr; }
+  .cipher-note-wrap { padding: 16px 10px; }
+  .cipher-message { letter-spacing: 0.12em; }
+  .alpha-grid { justify-content: center; }
+  .cipher-input-row { flex-direction: column; }
+  .witness-card { padding: 12px; gap: 10px; }
+  .witness-avatar { width: 46px; height: 46px; font-size: 1.6rem; }
+  .q-btn { padding-right: 70px; }
+  .article-paper { padding: 18px 16px; }
+  .art-row { flex-direction: column; gap: 0; }
+  .art-field select { font-size: 16px; }
+  .published-wrap { padding: 12px; }
+  .pub-body { padding: 16px; }
+  .btn { padding: 12px 18px; font-size: 0.88rem; }
+  .btn-row .btn { flex: 1 1 100%; }
+  /* 16px+ stops iPhones zooming in when you tap a text box */
+  .cipher-input, .art-field input, .art-field textarea { font-size: 16px; }
+  .art-field input.headline-input { font-size: 17px; }
+}
+
 </style>
 
 <!-- ══════════════════════════════════════════
